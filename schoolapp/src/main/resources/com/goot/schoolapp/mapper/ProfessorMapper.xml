@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+	<mapper namespace="com.univ.schoolapp.mapper.ProfessorMapper">
+	
+		<!-- 교수 리스트 조회 -->
+		<select id="selectProfessorList" resultType="com.univ.schoolapp.domain.ProfessorVO">
+			SELECT proId, proName, proOffice, proRank, proDelFlag
+			FROM school_ex.professor_tbl
+		</select>
+			
+		
+		<!-- 교수 정보 입력 -->	
+		<insert id="insertProfessor">
+			<selectKey keyProperty="proId" order="BEFORE" resultType="long">	
+				SELECT school_ex.professor_seq.nextval FROM dual
+			</selectKey>
+			INSERT INTO school_ex.professor_tbl
+			VALUES(#{proId}, #{proName}, #{proOffice}, #{proRank}, DEFAULT)
+		</insert>	
+		
+		
+		<!-- 교수 정보 수정 -->
+		<update id="updateProfessorInfo">
+			UPDATE school_ex.professor_tbl
+			SET proName = #{proName},
+			    proOffice = #{proOffice},
+			    proRank = #{proRank}
+			WHERE proId = #{proId}
+		</update>
+		
+		
+		<!-- 학생 성적 입력 -->
+		<insert id="insertGrade">
+			INSERT INTO school_ex.grade_tbl
+			VALUES (#{studentId}, #{courseId}, #{grade});
+		</insert>
+		
+		
+		
+		
+		<!-- 교수 삭제: proDelFlag to '1' -->
+		<update id="updateProDelFlag">
+			UPDATE school_ex.professor_tbl
+			SET proDelFlag = '1'
+			WHERE ProId = #{proId}
+		</update>
+	
+	
+	</mapper>

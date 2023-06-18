@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+	<mapper namespace="com.univ.schoolapp.mapper.CourseMapper">
+		
+		<!-- 강의 리스트 조회 -->
+		<resultMap id="proMap" type="com.univ.schoolapp.domain.ProfessorVO">
+			<result property="proId" column="proId"/>
+			<result property="proOffice" column="proOffice"/>
+			<result property="proRank" column="proRank"/>
+			<result property="proDelFlag" column="proDelFlag"/>
+		</resultMap>
+		
+		<resultMap id="courseMap" type="com.univ.schoolapp.domain.CourseVO">
+			<result property="courseId" column="courseId"/>
+			<result property="courseTitle" column="courseTitle"/>
+			<result property="courseHour" column="courseHour"/>
+			<result property="proId" column="proId"/>
+			<collection property="proList" resultMap="proMap"/>
+		</resultMap>
+		
+		<select id="selectCourseList" resultMap="courseMap">
+			SELECT c.courseId, c.courseTitle, c.courseHour, c.proId,
+			       p.proId, p.proOffice, p.proRank
+			FROM school_ex.course_tbl c INNER JOIN school_ex.professor_tbl p
+                                   			    ON c.proId = p.proId
+		</select>
+		
+		
+		<!-- 강의 등록 -->
+		<insert id="insertCourse">
+			<selectKey keyProperty="courseId" order="BEFORE" resultType="long">
+				SELECT school_ex.course_seq.nextval FROM dual
+			</selectKey>
+			INSERT INTO school_ex.course_tbl
+			VALUES (#{courseId}, #{courseTitle}, #{courseHour}, #{proId})
+		</insert>
+		
+		
+		<!-- 강의 정보 수정 -->
+		<update id="updateCourseInfo">	
+			UPDATE school_ex.course_tbl
+			SET courseTitle = #{courseTitle},
+			    courseHour = #{courseHour},
+			    proId = #{proId}
+			 WHERE courseId = #{courseId}   
+		</update>
+	
+		
+	</mapper>
