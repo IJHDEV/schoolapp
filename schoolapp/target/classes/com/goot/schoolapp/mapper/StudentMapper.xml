@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+	<mapper namespace="com.univ.schoolapp.mapper.StudentMapper">
+	
+		<!-- 학생 리스트 조회 -->
+		<select id="selectStudentList" resultType="com.univ.schoolapp.domain.StudentVO">
+			SELECT studentId, studentName, studentPhoneNumber, studentAddress, studentDelFlag
+			FROM school_ex.student_tbl
+		</select>
+		
+		<!-- 학생 1명 정보조회 -->
+		<resultMap id="gradeMap" type="com.univ.schoolapp.domain.GradeVO">
+			<result property="studentId" column="studentId"/>
+			<result property="courseId" column="courseId"/>
+			<result property="grade" column="grade"/>
+		</resultMap>
+		
+		<resultMap id="studentMap" type="com.univ.schoolapp.domain.StudentVO" >
+			<result property="studentId" column="studentId"/>
+			<result property="studentName" column="studentName"/>
+			<result property="studentPhoneNumber" column="studentPhoneNumber"/>
+			<result property="studentAddress" column="studentAddress"/>
+			<result property="studentDelFLag" column="studentDelFLag"/>
+			<collection property="gradeList" resultMap="gradeMap"/>
+		</resultMap>
+		
+		<select id="selectStudent" resultMap="studentMap">
+			SELECT s.studentId, s.studentName, s.studentPhoneNumber, s.studentAddress, s.studentDelFlag,
+			       g.studentId, g.courseId, g.grade
+			FROM school_ex.student_tbl s LEFT OUTER JOIN school_ex.grade_tbl g
+			                         				  ON s.studentId = g.studentId
+			WHERE s.studentId = #{studentId}
+		</select>	
+			
+			
+		<!-- 학생 정보 입력 -->	
+		<insert id="insertStudent">
+			<selectKey keyProperty="studentId" order="BEFORE" resultType="long">
+				school_ex.student_seq.nextval FROM dual
+			</selectKey>
+			INSERT INTO school_ex.student_tbl
+			VALUES (#{studentId}, #{studentName}, #{studentPhoneNumber}, #{studentAddress}, DEFAULT);
+		</insert>	
+			
+				
+		<!-- 학생 정보 수정 -->
+		<update id="updateStudentInfo">
+			UPDATE school_ex.student_tbl
+			SET studentName = #{studentName},
+			    studentPhoneNumber = #{studentPhoneNumber},
+			    studentAddress = #{studentAddress}
+			WHERE studentId = #{studentId}
+		</update>
+		
+		
+		<!-- 강의 신청 -->
+		<insert id="insertStudentToCourse">
+			
+		</insert>
+		
+		
+		
+		<!-- 학생 삭제: studentDelFlag to '1' -->
+		<update id="updateStudentDelFlag">
+			UPDATE school_ex.student_tbl
+			SET studentDelFlag = '1'
+			WHERE studentId = #{studentId}
+		</update>
+		
+		
+	</mapper>
